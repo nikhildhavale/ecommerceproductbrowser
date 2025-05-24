@@ -27,6 +27,14 @@ struct FilterView: View {
                     Text("1000")
                 }
             }.navigationTitle("Categories").navigationBarTitleDisplayMode(.inline).toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button(action: {
+                        showFilter = false
+                        model.delegate?.setMinMaxValue(min: nil, max: nil)
+                    }) {
+                        Text("Clear")
+                    }
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: {
                         if model.maxValue > model.minValue {

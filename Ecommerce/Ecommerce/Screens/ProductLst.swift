@@ -167,7 +167,7 @@ extension ProductListModel:NetworkRequestProtocol {
     }
 }
 extension ProductListModel:FilterValueUpdatedDelegate {
-    func setMinMaxValue(min: Int, max: Int) {
+    func setMinMaxValue(min: Int?, max: Int?) {
         minValue = min
         maxValue = max
         offset = 0

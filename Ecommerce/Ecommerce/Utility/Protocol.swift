@@ -19,5 +19,5 @@ protocol NetworkRequestProtocol {
     func loadRequest() async
 }
 protocol FilterValueUpdatedDelegate : AnyObject {
-    func setMinMaxValue(min:Int,max:Int)
+    func setMinMaxValue(min:Int?,max:Int?)
 }
