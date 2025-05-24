@@ -18,7 +18,9 @@ class UserData {
     init() {
         if let data = UserDefaults.standard.data(forKey: "userData") {
             loginResonse = try? JSONDecoder().decode(LoginResponse.self, from: data)
-            fetchUserProfile()
+            if loginResonse != nil {
+                fetchUserProfile()
+            }
         }
     }
     var loginResonse:LoginResponse? {
@@ -34,8 +36,9 @@ class UserData {
     }
     func fetchUserProfile() {
         Task {
-            let resultType : ResultType<UserProfileResponse,ErrorResponse, Error> = await NetworkSession.shared.setupGetRequest(path:CategoryConstants.category)
+            let resultType : ResultType<UserProfileResponse,ErrorResponse, Error>? = await NetworkSession.shared.setupGetRequest(path:CategoryConstants.category)
             switch resultType {
+            case .none:break
             case .success(let userResponse):
                 self.userProfileResponse = userResponse
             case .failedResponse:

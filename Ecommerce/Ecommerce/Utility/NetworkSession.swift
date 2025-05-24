@@ -52,9 +52,12 @@ class NetworkSession {
        
         return url
     }
-    func setupGetRequest<Response:Codable>(path: String , parameters:[URLQueryItem]? = nil ) async -> ResultType<Response,ErrorResponse,Error> {
+    func setupGetRequest<Response:Codable>(path: String , parameters:[URLQueryItem]? = nil ) async -> ResultType<Response,ErrorResponse,Error>? {
         do {
-            if let url = generateURL(with: path,parameters: parameters), let accesToken =  UserData.shared.loginResonse?.accessToken {
+            if !UserData.shared.isLoggedIn {
+               return nil 
+            }
+            if let url = generateURL(with: path,parameters: parameters), let accesToken =  UserData.shared.loginResonse?.accessToken  {
                     var urlRequest = URLRequest(url: url)
                     urlRequest.setValue("Bearer \(accesToken)", forHTTPHeaderField: "Authorization")
                     urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")

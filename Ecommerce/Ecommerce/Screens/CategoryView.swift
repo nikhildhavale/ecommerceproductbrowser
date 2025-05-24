@@ -15,7 +15,24 @@ struct CategoryView: View {
                 HorizontalScroller(viewModel: categoryViewModel.model).frame(height: 100)
                 ProductList(model: categoryViewModel.productListModel)
                 Spacer()
-            }.navigationTitle("Categories")
+            }.navigationTitle("Categories").toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(action: {
+                        
+                    }) {
+                        Image(systemName: "line.3.horizontal.decrease.circle") // Funnel icon
+                    }
+                }
+
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(action: {
+                        UserData.shared.loginResonse = nil
+                        categoryViewModel.hostingController?.showLogin()
+                    }) {
+                        Text("Logout")
+                    }
+                }
+            }
         }
        
     }
@@ -24,6 +41,7 @@ struct CategoryView: View {
 class CategoryViewModel:ObservableObject {
     let productListModel = ProductListModel()
     let model = HorizontalScrollerModel()
+    weak var hostingController:CategoryViewHostingController?
     func setupProductId() {
         model.action = { [weak self]  id in
             if let productId  =  id{
@@ -45,6 +63,11 @@ class CategoryViewModel:ObservableObject {
 class CategoryViewHostingController:UIHostingController<CategoryView> {
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+    func showLogin() {
+        if let parent = self.parent as? CategoryViewController {
+            parent.showLoginScreenIfNotLoggedIn()
+        }
     }
 }
 

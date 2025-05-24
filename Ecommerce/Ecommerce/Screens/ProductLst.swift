@@ -117,12 +117,13 @@ class ProductListModel:ObservableObject {
 // MARK: - NetworkRequestProtocol
 extension ProductListModel:NetworkRequestProtocol {
     func loadRequest() async {
-        let result: ResultType<[Product],ErrorResponse, Error> =  await NetworkSession.shared.setupGetRequest(
+        let result: ResultType<[Product],ErrorResponse, Error>? =  await NetworkSession.shared.setupGetRequest(
             path: ProductListConstants.productList,
             parameters: [URLQueryItem(name: "categoryId", value: id),URLQueryItem(name: "offset", value: "\(offset)"),URLQueryItem(name: "limit", value: "\(limit)")]
         )
         firstTimeLoading = true
         switch result {
+        case .none:break
         case .success(let response ):
             DispatchQueue.main.async {
                 if self.offset == 0 {

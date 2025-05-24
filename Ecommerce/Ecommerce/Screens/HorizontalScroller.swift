@@ -87,8 +87,9 @@ extension HorizontalScrollerModel:NetworkRequestProtocol {
     
     
     func loadRequest() async {
-        let result: ResultType<[Category],ErrorResponse, Error> =  await NetworkSession.shared.setupGetRequest(path: CategoryConstants.category)
+        let result: ResultType<[Category],ErrorResponse, Error>? =  await NetworkSession.shared.setupGetRequest(path: CategoryConstants.category)
         switch result {
+        case .none:break
         case .success(let response):
             DispatchQueue.main.async {
                 self.arrayCategory = response

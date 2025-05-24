@@ -14,6 +14,7 @@ class CategoryViewController: UIViewController {
         model.setupProductId()
         let categoryView = CategoryView(categoryViewModel: model)
         let controller = CategoryViewHostingController(rootView: categoryView)
+        model.hostingController = controller
         return controller
     }()
     override func viewDidLoad() {
