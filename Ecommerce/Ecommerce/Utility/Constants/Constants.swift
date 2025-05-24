@@ -19,7 +19,7 @@ struct CategoryConstants {
 
 }
 struct ProductListConstants {
-    static let productList = "/api/v1/product"
+    static let productList = "/api/v1/products"
 
 }
 struct UIConstants {

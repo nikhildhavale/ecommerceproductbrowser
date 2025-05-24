@@ -10,7 +10,9 @@ import UIKit
 class CategoryViewController: UIViewController {
     let activityIndicatorController = ActivityIndicatorController(text: LoginConstants.loginLoading)
     lazy var  categoryHostingController :CategoryViewHostingController =  {
-        let categoryView = CategoryView()
+        let model = CategoryViewModel()
+        model.setupProductId()
+        let categoryView = CategoryView(categoryViewModel: model)
         let controller = CategoryViewHostingController(rootView: categoryView)
         return controller
     }()

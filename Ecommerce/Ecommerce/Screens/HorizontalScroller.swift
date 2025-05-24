@@ -34,6 +34,7 @@ struct HorizontalScroller: View {
                                 viewModel.selectedID = item.id
 
                             }
+                            viewModel.action?(viewModel.selectedID)
                         }) {
                             VStack {
                                 CustomImageView(viewModel: CustomImageViewModel(url: item.image,title: item.name,size: CGSize(width: 50, height: 50)))
@@ -72,6 +73,14 @@ class HorizontalScrollerModel:ObservableObject {
      var alert:String?
     @Published var showAlert = false
     @Published var selectedID:Int?
+    var action:((Int?)->())?
+    init(arrayCategory: [Category] = [], alert: String? = nil, showAlert: Bool = false, selectedID: Int? = nil, action: ((Int?) -> Void)? = nil) {
+        self.arrayCategory = arrayCategory
+        self.alert = alert
+        self.showAlert = showAlert
+        self.selectedID = selectedID
+        self.action = action
+    }
 }
 // MARK: - NetworkRequestProtocol
 extension HorizontalScrollerModel:NetworkRequestProtocol {
