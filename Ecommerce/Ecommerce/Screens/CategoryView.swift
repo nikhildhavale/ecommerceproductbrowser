@@ -11,7 +11,7 @@ struct CategoryView: View {
     var body: some View {
         VStack {
             HorizontalScroller(viewModel: HorizontalScrollerModel())
-            Spacer()
+            
         }
     }
 }

@@ -17,44 +17,51 @@ struct Category: Codable,Hashable {
 struct HorizontalScroller: View {
     // Define multiple flexible rows
     @ObservedObject var  viewModel:HorizontalScrollerModel
- 
+   
     var body: some View {
-        ScrollView(.horizontal) {
-            LazyHGrid(rows: viewModel.rows, spacing: 16) {
-                ForEach(viewModel.arrayCategory, id: \.self) { item in
-                    Button(action: {
-                        viewModel.selectedID = item.id
-                    }) {
-                        VStack {
-                            CustomImageView(viewModel: CustomImageViewModel(url: item.image,title: item.name, size: CGSize(width: 50, height: 50))).frame(width: 60, height: 60)
-                            Text(item.name ?? "")
-                            }
-                        }.overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(viewModel.selectedID == item.id ? Color.blue : Color.clear, lineWidth: 2)
-                        )
-                    }
-                           
-                        }
-                        .padding()
-        }.task {
-            await viewModel.loadRequest()
-        }.alert(isPresented: $viewModel.showAlert) {
-            Alert(
-                title: Text("Error"),
-                message: Text(viewModel.alert ?? "" ),
-                dismissButton: .default(Text("OK"))
-            )
-        }.refreshable {
-            await viewModel.loadRequest()
+        if viewModel.rows.isEmpty {
+            ProgressView()
         }
+        else {
+            ScrollView(.horizontal) {
+                LazyHGrid(rows: viewModel.rows, spacing: 16) {
+                    ForEach(viewModel.arrayCategory, id: \.self) { item in
+                        Button(action: {
+                            viewModel.selectedID = item.id
+                        }) {
+                            VStack {
+                                CustomImageView(viewModel: CustomImageViewModel(url: item.image,title: item.name, size: CGSize(width: 50, height: 50)))
+                                Text(item.name ?? "").lineLimit(nil).foregroundStyle(Color.primary)
+                            } .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(viewModel.selectedID == item.id ? Color.blue : Color.clear, lineWidth: 2)
+                                )
+                        }
+
+                    }
+                               
+                            }
+                            .padding()
+            }.task {
+                await viewModel.loadRequest()
+            }.alert(isPresented: $viewModel.showAlert) {
+                Alert(
+                    title: Text("Error"),
+                    message: Text(viewModel.alert ?? "" ),
+                    dismissButton: .default(Text("OK"))
+                )
+            }.refreshable {
+                await viewModel.loadRequest()
+            }
+        }
+       
     }
 }
 // MARK: - HorizontalViewModel
 class HorizontalScrollerModel:ObservableObject {
     @Published var arrayCategory:[Category] = []
     let rows = [
-        GridItem(.flexible())    ]
+        GridItem(.fixed(60))    ]
      var alert:String?
     @Published var showAlert = false
     @Published var selectedID:Int?

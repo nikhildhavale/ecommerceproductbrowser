@@ -19,7 +19,7 @@ struct CustomImageView: View {
                 case .success(let image):
                     image
                     .resizable()
-                    .aspectRatio(contentMode: .fill)
+                    .aspectRatio(contentMode: .fit)
                     .clipped()
                     .frame(width: viewModel.size.width,height: viewModel.size.height)
                 case .failure(let error):
