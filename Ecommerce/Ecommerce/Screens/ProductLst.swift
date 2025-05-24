@@ -47,8 +47,21 @@ struct ProductList: View {
                                
                                 
                     }
+                    if model.showLoader {
+                        HStack {
+                            Spacer()
+                            ProgressView().onAppear {
+                                Task {
+                                    await model.loadRequest()
+                                }
+                            }
+                            Spacer()
+                        }
+                       
+                    }
                 }
                 .refreshable {
+                    model.offset = 0 
                     await model.loadRequest()
                 }.task {
                     await model.loadRequest()
@@ -80,8 +93,25 @@ class ProductListModel:ObservableObject {
    @Published var visibleList:[Product] = []
     @Published var searchText:String = ""
     var firstTimeLoading = false
+    var offset = 0 {
+        didSet{
+            if offset == 0 {
+                productList.removeAll()
+                visibleList.removeAll()
+            }
+           
+        }
+    }
+    var limit = 10
+    @Published var showLoader = false
     func filterProductList()  {
-        visibleList =  productList.filter { searchText.isEmpty ? true :  $0.title?.contains(searchText) ?? true }
+        if searchText.isEmpty {
+            visibleList = productList
+        }
+        else {
+            visibleList =  productList.filter {   $0.title?.contains(searchText) ?? true }
+        }
+       
     }
 }
 // MARK: - NetworkRequestProtocol
@@ -89,13 +119,22 @@ extension ProductListModel:NetworkRequestProtocol {
     func loadRequest() async {
         let result: ResultType<[Product],ErrorResponse, Error> =  await NetworkSession.shared.setupGetRequest(
             path: ProductListConstants.productList,
-            parameters: [URLQueryItem(name: "categoryId", value: id)]
+            parameters: [URLQueryItem(name: "categoryId", value: id),URLQueryItem(name: "offset", value: "\(offset)"),URLQueryItem(name: "limit", value: "\(limit)")]
         )
         firstTimeLoading = true
         switch result {
         case .success(let response ):
             DispatchQueue.main.async {
-                self.productList = response
+                if self.offset == 0 {
+                    self.productList = response
+                }
+                else {
+            
+                    self.productList += response
+
+                }
+                self.offset += response.count
+                self.showLoader = !response.isEmpty
                 self.filterProductList()
             }
         case .failedResponse(let failedResponse):

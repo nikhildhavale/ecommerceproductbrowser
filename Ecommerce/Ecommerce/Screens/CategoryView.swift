@@ -32,6 +32,7 @@ class CategoryViewModel:ObservableObject {
             else {
                 self?.productListModel.id = nil
             }
+            self?.productListModel.offset = 0
             Task {
                 await self?.productListModel.loadRequest()
 
