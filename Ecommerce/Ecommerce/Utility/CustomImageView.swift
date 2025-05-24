@@ -11,27 +11,33 @@ struct CustomImageView: View {
     @ObservedObject var viewModel:CustomImageViewModel
     var body: some View {
         if let urlStr = viewModel.url , let url = URL(string: urlStr) {
-            CachedAsyncImage(url: url,urlCache: URLCache.imageCache) {
-                 phase in
-                switch phase {
-                case .empty:
-                    ProgressView()
-                case .success(let image):
-                    image
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .clipped()
-                    .frame(width: viewModel.size.width,height: viewModel.size.height)
-                    .clipShape(Circle())
-                    
-                case .failure:
-                    Image(systemName: "xmark.octagon")
-                        .clipShape(Circle()).frame(width: viewModel.size.width,height: viewModel.size.height)
-                @unknown default:
-                    Image(systemName: "xmark.octagon")
-                        .clipShape(Circle()).frame(width: viewModel.size.width,height: viewModel.size.height)
+            if urlStr.hasSuffix("gif") {
+                GIFView(gifName: urlStr).frame(width: viewModel.size.width,height: viewModel.size.height)
+            }
+            else {
+                CachedAsyncImage(url: url,urlCache: URLCache.imageCache) {
+                     phase in
+                    switch phase {
+                    case .empty:
+                        ProgressView()
+                    case .success(let image):
+                        image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .clipped()
+                        .frame(width: viewModel.size.width,height: viewModel.size.height)
+                        .clipShape(Circle())
+                        
+                    case .failure:
+                        Image(systemName: "xmark.octagon")
+                            .clipShape(Circle()).frame(width: viewModel.size.width,height: viewModel.size.height)
+                    @unknown default:
+                        Image(systemName: "xmark.octagon")
+                            .clipShape(Circle()).frame(width: viewModel.size.width,height: viewModel.size.height)
+                    }
                 }
             }
+            
         }
         else if let title = viewModel.title {
             ZStack {
