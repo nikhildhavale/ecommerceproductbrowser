@@ -18,6 +18,10 @@ struct CategoryConstants {
     static let category = "/api/v1/categories"
 
 }
+struct ProductListConstants {
+    static let productList = "/api/v1/product"
+
+}
 struct UIConstants {
     static let cornerRadius: CGFloat = 8
 }

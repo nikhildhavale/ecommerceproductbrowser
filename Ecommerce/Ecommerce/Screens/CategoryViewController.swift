@@ -58,7 +58,6 @@ extension CategoryViewController:UIViewControllerProtocol {
     }
     
     func setupNavigationBar() {
-        self.navigationItem.title = "Categories"
 
     }
     

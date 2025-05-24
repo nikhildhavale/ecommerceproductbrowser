@@ -22,10 +22,14 @@ struct CustomImageView: View {
                     .aspectRatio(contentMode: .fit)
                     .clipped()
                     .frame(width: viewModel.size.width,height: viewModel.size.height)
-                case .failure(let error):
+                    .clipShape(Circle())
+                    
+                case .failure:
                     Image(systemName: "xmark.octagon")
+                        .clipShape(Circle()).frame(width: viewModel.size.width,height: viewModel.size.height)
                 @unknown default:
                     Image(systemName: "xmark.octagon")
+                        .clipShape(Circle()).frame(width: viewModel.size.width,height: viewModel.size.height)
                 }
             }
         }

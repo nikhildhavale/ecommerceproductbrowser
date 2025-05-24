@@ -38,15 +38,23 @@ class NetworkSession {
     static let baseURL = "https://api.escuelajs.co"
     var currentTask:URLSessionDataTask?
     static var shared = NetworkSession()
-    func generateURL(with path: String) -> URL? {
-        guard let url = URL(string: NetworkSession.baseURL + path) else {
+    func generateURL(with path: String,parameters:[URLQueryItem]? = nil) -> URL? {
+        guard var url = URL(string: NetworkSession.baseURL + path) else {
+            
+        
             return nil
         }
+        if let params = parameters {
+            var urlParser = URLComponents(string: url.absoluteString)
+            urlParser?.queryItems = params
+            return urlParser?.url
+        }
+       
         return url
     }
-    func setupGetRequest<Response:Codable>(path: String) async -> ResultType<Response,ErrorResponse,Error> {
+    func setupGetRequest<Response:Codable>(path: String , parameters:[URLQueryItem]? = nil ) async -> ResultType<Response,ErrorResponse,Error> {
         do {
-            if let url = generateURL(with: path), let accesToken =  UserData.shared.loginResonse?.accessToken {
+            if let url = generateURL(with: path,parameters: parameters), let accesToken =  UserData.shared.loginResonse?.accessToken {
                     var urlRequest = URLRequest(url: url)
                     urlRequest.setValue("Bearer \(accesToken)", forHTTPHeaderField: "Authorization")
                     urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")

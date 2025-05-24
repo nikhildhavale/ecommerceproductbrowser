@@ -27,15 +27,22 @@ struct HorizontalScroller: View {
                 LazyHGrid(rows: viewModel.rows, spacing: 16) {
                     ForEach(viewModel.arrayCategory, id: \.self) { item in
                         Button(action: {
-                            viewModel.selectedID = item.id
+                            if viewModel.selectedID == item.id {
+                                viewModel.selectedID = nil
+
+                            }else {
+                                viewModel.selectedID = item.id
+
+                            }
                         }) {
                             VStack {
-                                CustomImageView(viewModel: CustomImageViewModel(url: item.image,title: item.name, size: CGSize(width: 50, height: 50)))
+                                CustomImageView(viewModel: CustomImageViewModel(url: item.image,title: item.name,size: CGSize(width: 50, height: 50)))
+                                    .background(
+                                                    Circle()
+                                                        .stroke(viewModel.selectedID == item.id ? Color.blue : Color.clear, lineWidth: 3)
+                                                )
                                 Text(item.name ?? "").lineLimit(nil).foregroundStyle(Color.primary)
-                            } .overlay(
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .stroke(viewModel.selectedID == item.id ? Color.blue : Color.clear, lineWidth: 2)
-                                )
+                            }.frame(minWidth: 60, minHeight: 60)
                         }
 
                     }
@@ -66,6 +73,7 @@ class HorizontalScrollerModel:ObservableObject {
     @Published var showAlert = false
     @Published var selectedID:Int?
 }
+// MARK: - NetworkRequestProtocol
 extension HorizontalScrollerModel:NetworkRequestProtocol {
     
     
