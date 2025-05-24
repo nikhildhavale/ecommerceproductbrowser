@@ -9,6 +9,7 @@ import SwiftUI
 // MARK: - CategoryView
 struct CategoryView: View {
     @ObservedObject var categoryViewModel:CategoryViewModel
+    @State var showFilter:Bool = false
     var body: some View {
         NavigationStack {
             VStack {
@@ -18,7 +19,7 @@ struct CategoryView: View {
             }.navigationTitle("Categories").toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: {
-                        
+                        showFilter = true 
                     }) {
                         Image(systemName: "line.3.horizontal.decrease.circle") // Funnel icon
                     }
@@ -32,6 +33,8 @@ struct CategoryView: View {
                         Text("Logout")
                     }
                 }
+            }.sheet(isPresented: $showFilter) {
+                FilterView(showFilter: $showFilter, model: categoryViewModel.filterModel)
             }
         }
        
@@ -41,6 +44,7 @@ struct CategoryView: View {
 class CategoryViewModel:ObservableObject {
     let productListModel = ProductListModel()
     let model = HorizontalScrollerModel()
+    let filterModel = FilterViewModel()
     weak var hostingController:CategoryViewHostingController?
     func setupProductId() {
         model.action = { [weak self]  id in
@@ -56,7 +60,7 @@ class CategoryViewModel:ObservableObject {
 
             }
         }
-        
+        filterModel.delegate = productListModel
     }
 }
 // MARK: - CategoryHosting

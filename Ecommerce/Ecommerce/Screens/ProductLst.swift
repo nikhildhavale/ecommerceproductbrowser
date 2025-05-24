@@ -93,6 +93,8 @@ class ProductListModel:ObservableObject {
    @Published var visibleList:[Product] = []
     @Published var searchText:String = ""
     var firstTimeLoading = false
+    var minValue:Int?
+    var maxValue:Int?
     var offset = 0 {
         didSet{
             if offset == 0 {
@@ -117,9 +119,21 @@ class ProductListModel:ObservableObject {
 // MARK: - NetworkRequestProtocol
 extension ProductListModel:NetworkRequestProtocol {
     func loadRequest() async {
+        var paramters = [URLQueryItem(name: "offset", value: "\(offset)"),URLQueryItem(name: "limit", value: "\(limit)")]
+        if id != nil {
+            paramters.insert(URLQueryItem(name: "categoryId", value: id), at: 0)
+            
+        }
+       
+        if let minPrice = minValue {
+            paramters.append( URLQueryItem(name: "price_min", value: String(minPrice)))
+        }
+        if let maxPrice = maxValue {
+            paramters.append(URLQueryItem(name: "price_max", value: String(maxPrice)))
+        }
         let result: ResultType<[Product],ErrorResponse, Error>? =  await NetworkSession.shared.setupGetRequest(
             path: ProductListConstants.productList,
-            parameters: [URLQueryItem(name: "categoryId", value: id),URLQueryItem(name: "offset", value: "\(offset)"),URLQueryItem(name: "limit", value: "\(limit)")]
+            parameters: paramters
         )
         firstTimeLoading = true
         switch result {
@@ -151,4 +165,17 @@ extension ProductListModel:NetworkRequestProtocol {
             }
         }
     }
+}
+extension ProductListModel:FilterValueUpdatedDelegate {
+    func setMinMaxValue(min: Int, max: Int) {
+        minValue = min
+        maxValue = max
+        offset = 0
+        Task {
+           await loadRequest()
+
+        }
+    }
+    
+    
 }

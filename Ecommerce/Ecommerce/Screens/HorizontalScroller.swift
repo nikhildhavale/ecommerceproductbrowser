@@ -19,8 +19,10 @@ struct HorizontalScroller: View {
     @ObservedObject var  viewModel:HorizontalScrollerModel
    
     var body: some View {
-        if viewModel.rows.isEmpty {
-            ProgressView()
+        if viewModel.arrayCategory.isEmpty {
+            ProgressView().task {
+                await viewModel.loadRequest()
+            }
         }
         else {
             ScrollView(.horizontal) {
