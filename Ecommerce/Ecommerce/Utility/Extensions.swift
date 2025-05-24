@@ -48,4 +48,14 @@ extension UIViewController {
         child.view.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         child.didMove(toParent: self)
     }
+    func showAlertOK(title: String? = nil, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(alert, animated: true)
+    }
+}
+extension Data {
+    func printString() {
+        print(String(data: self, encoding: .utf8)!)
+    }
 }

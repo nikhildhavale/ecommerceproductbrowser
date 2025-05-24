@@ -6,8 +6,9 @@
 //  Created by Nikhil Dhavale on 24/05/25.
 //
 struct UserData {
-    static let shared = UserData()
+    static var shared = UserData()
+    var loginResonse:LoginResponse?
     var isLoggedIn: Bool  {
-        false
+        loginResonse != nil && loginResonse?.accessToken != nil
     }
 }

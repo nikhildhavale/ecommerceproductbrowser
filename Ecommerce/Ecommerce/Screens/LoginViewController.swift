@@ -6,6 +6,19 @@
 //
 
 import UIKit
+// MARK: - LoginRequest
+struct LoginRequest: Codable {
+    let email, password: String?
+}
+// MARK: - LoginResponse
+struct LoginResponse: Codable {
+    let accessToken, refreshToken: String?
+
+    enum CodingKeys: String, CodingKey {
+        case accessToken = "access_token"
+        case refreshToken = "refresh_token"
+    }
+}
 // MARK: LoginViewController class
 class LoginViewController: UIViewController {
     @IBOutlet weak var emailTextField: UITextField!
@@ -17,11 +30,10 @@ class LoginViewController: UIViewController {
         setupNavigationBar()
         setupViewHeirarchy()
         setupConstraints()
-        loadRequest()
+      //  loadRequest()
         // Do any additional setup after loading the view.
     }
     @IBAction func loginTapped(_ sender: Any) {
-        activityIndicatorController.view.isHidden = false
         loadRequest()
     }
 
@@ -51,7 +63,6 @@ extension LoginViewController:UIViewControllerProtocol{
     
     func setupConstraints() {
         embedChildAndAlignToSuperview(activityIndicatorController)
-        activityIndicatorController.view.isHidden = true
     }
     
     func setupNavigationBar() {
@@ -75,7 +86,30 @@ extension LoginViewController: UITextFieldDelegate {
 // MARK: NetworkRequestProtocol
 extension LoginViewController: NetworkRequestProtocol {
     func loadRequest() {
-        activityIndicatorController.view.isHidden = false
+        if let userName = self.emailTextField.text, let password = self.passwordTextField.text {
+            activityIndicatorController.view.isHidden = false
+            Task {
+                let request = LoginRequest(email: userName, password: password)
+                let result: ResultType<LoginResponse,ErrorResponse, Error> =  await NetworkSession.shared.setupPostRequest(request: request, path: LoginConstants.loginURL)
+                switch result {
+                case .success(let response):
+                    UserData.shared.loginResonse = response
+                    DispatchQueue.main.async {
+                        self.dismiss(animated: true)
+                    }
+                case .failedResponse(let response):
+                    DispatchQueue.main.async {
+                        self.showAlertOK(title: "Error", message: response.message ?? "")
+                    }
+                case .failure(let failure):
+                    DispatchQueue.main.async {
+                        self.showAlertOK(title: "Error", message: failure.localizedDescription)
+                    }
+                }
+            }
+           
+        }
+        
     }
     
     
