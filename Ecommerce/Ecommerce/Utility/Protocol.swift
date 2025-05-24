@@ -16,5 +16,5 @@ extension UIViewControllerProtocol{
     }
 }
 protocol NetworkRequestProtocol {
-    func loadRequest()
+    func loadRequest() async
 }

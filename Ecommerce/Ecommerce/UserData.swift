@@ -34,7 +34,7 @@ class UserData {
     }
     func fetchUserProfile() {
         Task {
-            let resultType : ResultType<UserProfileResponse,ErrorResponse, Error> = await NetworkSession.shared.setupGetRequest(path: "/api/v1/auth/profile")
+            let resultType : ResultType<UserProfileResponse,ErrorResponse, Error> = await NetworkSession.shared.setupGetRequest(path:CategoryConstants.category)
             switch resultType {
             case .success(let userResponse):
                 self.userProfileResponse = userResponse

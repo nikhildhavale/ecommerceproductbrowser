@@ -24,6 +24,17 @@ extension UIView {
         NSLayoutConstraint.activate([leadingAnchor, trailingAnchor, topAnchor, bottomAnchor])
         return Constaints(leadingAnchor: leadingAnchor, trailingAnchor: trailingAnchor, topAnchor: topAnchor, bottomAnchor: bottomAnchor)
     }
+    @discardableResult
+    func addandAlignToSafeAreaSuperView(_ superView:UIView) -> Constaints {
+        self.translatesAutoresizingMaskIntoConstraints = false
+        superView.addSubview(self)
+        let leadingAnchor =     superView.safeAreaLayoutGuide.leadingAnchor.constraint(equalTo: leadingAnchor)
+        let trailingAnchor =    superView.safeAreaLayoutGuide.trailingAnchor.constraint(equalTo: trailingAnchor)
+        let topAnchor =  superView.safeAreaLayoutGuide.topAnchor.constraint(equalTo: topAnchor)
+        let bottomAnchor = superView.safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: bottomAnchor)
+        NSLayoutConstraint.activate([leadingAnchor, trailingAnchor, topAnchor, bottomAnchor])
+        return Constaints(leadingAnchor: leadingAnchor, trailingAnchor: trailingAnchor, topAnchor: topAnchor, bottomAnchor: bottomAnchor)
+    }
     var cornerRadius: CGFloat {
             get {
                 return layer.cornerRadius
@@ -40,6 +51,11 @@ extension UIViewController {
         child.view.addAndAlignToSuperview(view)
         child.didMove(toParent: self)
     }
+    func embedChildAndAlignToSafeArea(_ child: UIViewController) {
+        addChild(child)
+        child.view.addandAlignToSafeAreaSuperView(view)
+        child.didMove(toParent: self)
+    }
     func embedChildCenteredInSuperview(_ child: UIViewController) {
         addChild(child)
         view.addSubview(child.view)
@@ -53,7 +69,18 @@ extension UIViewController {
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true)
     }
+    
 }
+extension URLCache {
+   public static let imageCache = URLCache(memoryCapacity: 512_000_000,
+                                           diskCapacity: 10_000_000_000,
+                                           directory:
+                                            try? FileManager.default.url(for: .cachesDirectory,
+                                                                         in: .userDomainMask,
+                                                                         appropriateFor: nil,
+                                                                         create: false))
+}
+
 extension Data {
     func printString() {
         print(String(data: self, encoding: .utf8)!)

@@ -8,9 +8,17 @@
 import UIKit
 
 class CategoryViewController: UIViewController {
-
+    let activityIndicatorController = ActivityIndicatorController(text: LoginConstants.loginLoading)
+    lazy var  categoryHostingController :CategoryViewHostingController =  {
+        let categoryView = CategoryView()
+        let controller = CategoryViewHostingController(rootView: categoryView)
+        return controller
+    }()
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupNavigationBar()
+        setupViewHeirarchy()
+        setupConstraints()
         // Do any additional setup after loading the view.
     }
     func showLoginScreenIfNotLoggedIn() {
@@ -19,6 +27,9 @@ class CategoryViewController: UIViewController {
             let vc = storyboard?.instantiateViewController(withIdentifier: "LoginNavigationController") as! UINavigationController
             vc.modalPresentationStyle = .fullScreen
             self.present(vc, animated: true)
+        }
+        else {
+            loadRequest()
         }
     }
     override func viewDidAppear(_ animated: Bool) {
@@ -38,15 +49,24 @@ class CategoryViewController: UIViewController {
 }
 extension CategoryViewController:UIViewControllerProtocol {
     func setupViewHeirarchy() {
-        
+        activityIndicatorController.view.isHidden = true
     }
     
     func setupConstraints() {
-        
+        embedChildAndAlignToSuperview(activityIndicatorController)
+        embedChildAndAlignToSafeArea(categoryHostingController)
     }
     
     func setupNavigationBar() {
-        
+        self.navigationItem.title = "Categories"
+
+    }
+    
+    
+}
+extension CategoryViewController:NetworkRequestProtocol {
+    func loadRequest() {
+       
     }
     
     

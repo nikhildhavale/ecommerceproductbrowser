@@ -12,6 +12,10 @@ struct LoginConstants {
     static let emailPlaceholder = "Email"
     static let passwordPlaceholder = "Password"
     static let loginURL = "/api/v1/auth/login"
+    static let userProfile = "/api/v1/auth/profile"
+}
+struct CategoryConstants {
+    static let category = "/api/v1/categories"
 
 }
 struct UIConstants {
