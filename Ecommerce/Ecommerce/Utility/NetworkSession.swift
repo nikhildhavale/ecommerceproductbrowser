@@ -44,6 +44,35 @@ class NetworkSession {
         }
         return url
     }
+    func setupGetRequest<Response:Codable>(path: String) async -> ResultType<Response,ErrorResponse,Error> {
+        do {
+            if let url = generateURL(with: path), let accesToken =  UserData.shared.loginResonse?.accessToken {
+                    var urlRequest = URLRequest(url: url)
+                    urlRequest.setValue("Bearer \(accesToken)", forHTTPHeaderField: "Authorization")
+                    urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+                    urlRequest.httpMethod = HTTPConstants.get
+                    let (data, _) = try await URLSession.shared.data(for: urlRequest)
+                    print("URL : \(url.absoluteString)")
+                    print("data :")
+                    data.printString()
+                if let decoded = try? JSONDecoder().decode(ErrorResponse.self, from: data) , decoded.statusCode != nil , decoded.message != nil   {
+                        return .failedResponse(decoded)
+                    }
+                    else if let decoded = try? JSONDecoder().decode(Response.self, from: data) {
+                        return .success(decoded)
+                    }
+                    else {
+                        return .failure(CustomError.noData)
+                    }
+                }
+                else {
+                    return .failure(CustomError.invalidURL)
+                }
+            }
+            catch {
+                return .failure(CustomError.noData)
+            }
+    }
     func setupPostRequest<T: Codable,Response:Codable>(request:T,path:String) async -> ResultType<Response,ErrorResponse,Error> {
         do {
             if let url = generateURL(with: path) {
@@ -55,11 +84,11 @@ class NetworkSession {
                 print("URL : \(url.absoluteString)")
                 print("data :")
                 data.printString()
-                if let decoded = try? JSONDecoder().decode(Response.self, from: data) {
-                    return .success(decoded)
-                }
-                else if let decoded = try? JSONDecoder().decode(ErrorResponse.self, from: data) {
+                if let decoded = try? JSONDecoder().decode(ErrorResponse.self, from: data) , decoded.statusCode != nil  {
                     return .failedResponse(decoded)
+                }
+                else if let decoded = try? JSONDecoder().decode(Response.self, from: data) {
+                    return .success(decoded)
                 }
                 else {
                     return .failure(CustomError.noData)

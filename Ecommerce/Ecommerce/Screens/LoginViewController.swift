@@ -99,10 +99,12 @@ extension LoginViewController: NetworkRequestProtocol {
                     }
                 case .failedResponse(let response):
                     DispatchQueue.main.async {
+                        self.activityIndicatorController.view.isHidden = true
                         self.showAlertOK(title: "Error", message: response.message ?? "")
                     }
                 case .failure(let failure):
                     DispatchQueue.main.async {
+                        self.activityIndicatorController.view.isHidden = true
                         self.showAlertOK(title: "Error", message: failure.localizedDescription)
                     }
                 }
