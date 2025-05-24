@@ -27,7 +27,7 @@ struct ProductList: View {
             else {
                      
                 List {
-                    ForEach(model.productList, id: \.self) { product in
+                    ForEach(model.visibleList, id: \.self) { product in
                         Button(action: {
                                     
                                     
@@ -47,9 +47,13 @@ struct ProductList: View {
                                
                                 
                     }
-                }.refreshable {
-                    await model.loadRequest()
                 }
+                .refreshable {
+                    await model.loadRequest()
+                }.task {
+                    await model.loadRequest()
+                }.searchable(text: $model.searchText, prompt: "Search Products")
+                
                     
                 
             }
@@ -62,6 +66,8 @@ struct ProductList: View {
         
             
             
+        }.onChange(of: model.searchText) {
+            model.filterProductList()
         }
        
     }
@@ -70,8 +76,13 @@ class ProductListModel:ObservableObject {
     @Published var id:String?
     @Published var showAlert:Bool = false
     @Published var alert:String?
-    @Published  var productList:[Product] = []
+    var productList:[Product] = []
+   @Published var visibleList:[Product] = []
+    @Published var searchText:String = ""
     var firstTimeLoading = false
+    func filterProductList()  {
+        visibleList =  productList.filter { searchText.isEmpty ? true :  $0.title?.contains(searchText) ?? true }
+    }
 }
 // MARK: - NetworkRequestProtocol
 extension ProductListModel:NetworkRequestProtocol {
@@ -85,6 +96,7 @@ extension ProductListModel:NetworkRequestProtocol {
         case .success(let response ):
             DispatchQueue.main.async {
                 self.productList = response
+                self.filterProductList()
             }
         case .failedResponse(let failedResponse):
             DispatchQueue.main.async {
